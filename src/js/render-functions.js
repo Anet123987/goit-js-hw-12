@@ -1,11 +1,13 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const gallery = document.querySelector('#gallery'); 
-const loader = document.querySelector('#loader'); 
+const loadMoreButton = document.querySelector('#load-more');
+const gallery = document.querySelector('#gallery');
+const loader = document.querySelector('#loader');
 let lightbox;
 
-export function renderGallery(images) {
+// Экспортируем нужные функции
+export function createGallery(images) {
   const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `
       <li class="gallery-item">
@@ -32,61 +34,83 @@ export function renderGallery(images) {
         </div>
       </li>
     `;
-  }).join('');
+  }).join(''); // Преобразование массива в строку
 
-  gallery.insertAdjacentHTML('beforeend', markup);
-
-  if(!lightbox){
-    lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-    closeText: '✖',  
-    close: true,    
-    showCounter: false 
-  });
-
-  
-  lightbox.on('show.simplelightbox', function () {
-    const currentImage = document.querySelector('.sl-image');
-    
-    if (currentImage) {
-      currentImage.classList.remove('sl-image'); 
-    }
-  });
-
-  
-  lightbox.on('next.simplelightbox', function () {
-    const currentImage = document.querySelector('.sl-image');
-    if (currentImage) {
-      currentImage.classList.remove('sl-image'); 
-    }
-  });
-
-  lightbox.on('prev.simplelightbox', function () {
-    const currentImage = document.querySelector('.sl-image');
-    if (currentImage) {
-      currentImage.classList.remove('sl-image'); 
-    }
-  });
-  } else{
-  lightbox.refresh(); 
-}
-}
-
-export function clearGallery() {
   if (gallery) {
-    gallery.innerHTML = '';
+    gallery.insertAdjacentHTML('beforeend', markup); // Вставка HTML в галерею
+
+    if (!lightbox) {
+      // Если Lightbox еще не создан, создаем его
+      lightbox = new SimpleLightbox('.gallery a', {
+        captionsData: 'alt',
+        captionDelay: 250,
+        closeText: '✖',
+        close: true,
+        showCounter: false,
+      });
+
+      // Обработчики для удаления класса "sl-image" при переходе между изображениями
+      lightbox.on('show.simplelightbox', removeSlImageClass);
+      lightbox.on('next.simplelightbox', removeSlImageClass);
+      lightbox.on('prev.simplelightbox', removeSlImageClass);
+    } else {
+      // Если Lightbox уже создан, обновляем его
+      lightbox.refresh();
+    }
+  }
+
+  scrollPage(); // Выполняем прокрутку страницы
+}
+
+// Функция для удаления класса "sl-image"
+function removeSlImageClass() {
+  const currentImage = document.querySelector('.sl-image');
+  if (currentImage) {
+    currentImage.classList.remove('sl-image');
   }
 }
 
+// Функция для прокрутки страницы на две высоты карточки
+function scrollPage() {
+  const firstElement = gallery?.firstElementChild; // Проверка на существование первого элемента
+  if (firstElement) {
+    const cardHeight = firstElement.getBoundingClientRect().height; // Получаем высоту карточки
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+  }
+}
+
+// Функции для управления элементами интерфейса
+export function clearGallery() {
+  if (gallery) {
+    gallery.innerHTML = ''; // Очищаем галерею
+  }
+}
+
+export function toggleLoader(show) {
+  if (!loader) return;
+  loader.classList.toggle('hidden', !show); // Показ/скрытие индикатора загрузки
+}
+
+export function toggleLoadMoreButton(show) {
+  if (!loadMoreButton) return;
+  loadMoreButton.classList.toggle('hidden', !show); // Показ/скрытие кнопки "Load more"
+}
+
 export function showLoader() {
-  
-  if (loader) loader.classList.remove('hidden');
+  toggleLoader(true);
 }
 
 export function hideLoader() {
- 
-  if (loader) loader.classList.add('hidden');
+  toggleLoader(false);
 }
 
+export function showLoadMoreButton() {
+  toggleLoadMoreButton(true);
+}
 
+export function hideLoadMoreButton() {
+  toggleLoadMoreButton(false);
+}

@@ -1,48 +1,110 @@
-import { fetchImages } from './js/pixabay-api.js';
-import { renderGallery, clearGallery, showLoader, hideLoader } from './js/render-functions.js';
+import { getImagesByQuery } from './js/pixabay-api.js';
+import {
+  createGallery,
+  clearGallery,
+  showLoader,
+  hideLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+} from './js/render-functions.js';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('#search-form');
 const gallery = document.querySelector('#gallery');
+const loadMoreBtn = document.querySelector('#load-more');
+
+let currentPage = 1;
+let currentQuery = '';
+const PER_PAGE = 15;
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const query = e.target.elements['search-text'].value.trim(); 
+  currentQuery = e.target.elements['search-text'].value.trim();
+  currentPage = 1;
 
-  if (!query) return; 
+  if (!currentQuery) return;
 
-  clearGallery(); 
-  showLoader();  
+  clearGallery();
+  showLoader();
+  hideLoadMoreButton();
 
   try {
-    const data = await fetchImages(query); 
+    const data = await getImagesByQuery(currentQuery, currentPage);
 
-    if (data.hits.length === 0) { 
+    if (!data.hits.length) {
       iziToast.warning({
         title: 'Oops',
-        message: 'Sorry, there are no images matching your search query. Please try again!',
+        message: 'No images found. Try a different search term.',
         position: 'topRight',
       });
-      hideLoader(); 
+      hideLoader();
       return;
     }
 
-    renderGallery(data.hits); 
-    hideLoader(); 
+    createGallery(data.hits);
+    hideLoader();
 
-   
-    e.target.elements['search-text'].value = ''; 
+    if (data.totalHits > PER_PAGE) {
+      showLoadMoreButton();
+    }
 
-    
-    e.target.elements['search-text'].focus();
+    form.reset();
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Failed to fetch images. Please try again later.',
+      position: 'topRight',
+    });
+    hideLoader();
+  }
+});
+
+loadMoreBtn.addEventListener('click', async () => {
+  currentPage += 1;
+  showLoader();
+  hideLoadMoreButton();
+
+  try {
+    const data = await getImagesByQuery(currentQuery, currentPage);
+
+    if (!data.hits.length) {
+      iziToast.info({
+        title: 'Info',
+        message: 'No more images found.',
+        position: 'topRight',
+      });
+      hideLoader();
+      return;
+    }
+
+    createGallery(data.hits);
+    hideLoader();
+
+    const totalPages = Math.ceil(data.totalHits / PER_PAGE);
+    if (currentPage >= totalPages) {
+      hideLoadMoreButton();
+      iziToast.info({
+        title: 'End of Results',
+        message: "You've reached the end of search results.",
+        position: 'topRight',
+      });
+    } else {
+      showLoadMoreButton();
+    }
+
+    const cardHeight = gallery.firstElementChild.getBoundingClientRect().height;
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
 
   } catch (error) {
     iziToast.error({
       title: 'Error',
-      message: 'Failed to fetch images.',
+      message: 'Failed to load more images.',
       position: 'topRight',
     });
-    hideLoader(); 
+    hideLoader();
   }
 });
