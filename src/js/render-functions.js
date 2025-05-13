@@ -59,7 +59,7 @@ export function createGallery(images) {
     }
   }
 
-  scrollPage(); // Выполняем прокрутку страницы
+  
 }
 
 // Функция для удаления класса "sl-image"

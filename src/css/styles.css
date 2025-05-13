@@ -171,3 +171,21 @@ input:-webkit-autofill {
 .hidden {
   display: none;
 }
+#load-more {
+  display: block;
+  margin: 20px auto; /* Центрирует кнопку по горизонтали и добавляет отступ сверху и снизу */
+  border-radius: 8px;
+  padding: 8px 16px;
+  width: 125px;
+  height: 40px;
+  background: #4e75ff;
+  font-family: var(--font-family);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+#load-more.hidden {
+  display: none;
+}

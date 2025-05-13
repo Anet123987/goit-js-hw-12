@@ -45,7 +45,15 @@ form.addEventListener('submit', async (e) => {
     createGallery(data.hits);
     hideLoader();
 
-    if (data.totalHits > PER_PAGE) {
+    const totalPages = Math.ceil(data.totalHits / PER_PAGE);
+    if (currentPage >= totalPages) {
+      hideLoadMoreButton();
+      iziToast.info({
+        title: 'End of Results',
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
+    } else {
       showLoadMoreButton();
     }
 
@@ -86,13 +94,14 @@ loadMoreBtn.addEventListener('click', async () => {
       hideLoadMoreButton();
       iziToast.info({
         title: 'End of Results',
-        message: "You've reached the end of search results.",
+        message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
     } else {
       showLoadMoreButton();
     }
 
+    // Прокрутка сторінки після додавання нових зображень
     const cardHeight = gallery.firstElementChild.getBoundingClientRect().height;
     window.scrollBy({
       top: cardHeight * 2,
