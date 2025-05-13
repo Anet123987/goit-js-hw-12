@@ -31,7 +31,7 @@ form.addEventListener('submit', async (e) => {
   clearGallery();
   showLoader();
   hideLoadMoreButton();
-hideBottomLoaderText ();
+  hideBottomLoaderText ();
   try {
     const data = await getImagesByQuery(currentQuery, currentPage);
     totalPages = Math.ceil(data.totalHits / IMAGES_PER_PAGE);
@@ -87,12 +87,11 @@ async function handleGalleryResponse(data) {
     hideBottomLoaderText();  
     return false;
   }
-
   createGallery(data.hits); 
+
   hideLoader();  
 
-  // ✅ Ждём пока изображения загрузятся
-  await waitForImagesToLoad();
+  await waitForImagesToLoad()
 
   hideBottomLoaderText();
 
