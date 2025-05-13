@@ -76,7 +76,7 @@ loadMoreBtn.addEventListener('click', async () => {
   }
 });
 
-function handleGalleryResponse(data) {
+async function handleGalleryResponse(data) {
   if (!data.hits.length) {
     iziToast.info({
       title: 'Info',
@@ -91,7 +91,9 @@ function handleGalleryResponse(data) {
   createGallery(data.hits); 
   hideLoader();  
 
-  
+  // ✅ Ждём пока изображения загрузятся
+  await waitForImagesToLoad();
+
   hideBottomLoaderText();
 
   if (currentPage >= totalPages) {
@@ -106,4 +108,12 @@ function handleGalleryResponse(data) {
   }
 
   return true;
+}
+function waitForImagesToLoad() {
+  const images = document.querySelectorAll('#gallery img');
+  const promises = Array.from(images).map(img => {
+    if (img.complete) return Promise.resolve(); 
+    return new Promise(resolve => img.onload = resolve);
+  });
+  return Promise.all(promises);
 }
