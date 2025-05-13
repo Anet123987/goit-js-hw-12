@@ -4,9 +4,9 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const loadMoreButton = document.querySelector('#load-more');
 const gallery = document.querySelector('#gallery');
 const loader = document.querySelector('#loader');
+const bottomLoaderText = document.querySelector('#bottom-loader-text');
 let lightbox;
 
-// Экспортируем нужные функции
 export function createGallery(images) {
   const markup = images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `
@@ -15,32 +15,19 @@ export function createGallery(images) {
           <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
         </a>
         <div class="info">
-          <div class="info-item">
-            <p class="label">Likes</p>
-            <p class="value">${likes}</p>
-          </div>
-          <div class="info-item">
-            <p class="label">Views</p>
-            <p class="value">${views}</p>
-          </div>
-          <div class="info-item">
-            <p class="label">Comments</p>
-            <p class="value">${comments}</p>
-          </div>
-          <div class="info-item">
-            <p class="label">Downloads</p>
-            <p class="value">${downloads}</p>
-          </div>
+          <div class="info-item"><p class="label">Likes</p><p class="value">${likes}</p></div>
+          <div class="info-item"><p class="label">Views</p><p class="value">${views}</p></div>
+          <div class="info-item"><p class="label">Comments</p><p class="value">${comments}</p></div>
+          <div class="info-item"><p class="label">Downloads</p><p class="value">${downloads}</p></div>
         </div>
       </li>
     `;
-  }).join(''); // Преобразование массива в строку
+  }).join('');
 
   if (gallery) {
-    gallery.insertAdjacentHTML('beforeend', markup); // Вставка HTML в галерею
+    gallery.insertAdjacentHTML('beforeend', markup);
 
     if (!lightbox) {
-      // Если Lightbox еще не создан, создаем его
       lightbox = new SimpleLightbox('.gallery a', {
         captionsData: 'alt',
         captionDelay: 250,
@@ -49,20 +36,15 @@ export function createGallery(images) {
         showCounter: false,
       });
 
-      // Обработчики для удаления класса "sl-image" при переходе между изображениями
       lightbox.on('show.simplelightbox', removeSlImageClass);
       lightbox.on('next.simplelightbox', removeSlImageClass);
       lightbox.on('prev.simplelightbox', removeSlImageClass);
     } else {
-      // Если Lightbox уже создан, обновляем его
       lightbox.refresh();
     }
   }
-
-  
 }
 
-// Функция для удаления класса "sl-image"
 function removeSlImageClass() {
   const currentImage = document.querySelector('.sl-image');
   if (currentImage) {
@@ -70,11 +52,9 @@ function removeSlImageClass() {
   }
 }
 
-// Функция для прокрутки страницы на две высоты карточки
-function scrollPage() {
-  const firstElement = gallery?.firstElementChild; // Проверка на существование первого элемента
-  if (firstElement) {
-    const cardHeight = firstElement.getBoundingClientRect().height; // Получаем высоту карточки
+export function scrollPage() {
+  const cardHeight = gallery?.firstElementChild?.getBoundingClientRect().height;
+  if (cardHeight) {
     window.scrollBy({
       top: cardHeight * 2,
       behavior: 'smooth',
@@ -82,35 +62,45 @@ function scrollPage() {
   }
 }
 
-// Функции для управления элементами интерфейса
 export function clearGallery() {
-  if (gallery) {
-    gallery.innerHTML = ''; // Очищаем галерею
-  }
+  gallery.innerHTML = '';
 }
 
 export function toggleLoader(show) {
-  if (!loader) return;
-  loader.classList.toggle('hidden', !show); // Показ/скрытие индикатора загрузки
+  loader?.classList.toggle('hidden', !show);
 }
 
 export function toggleLoadMoreButton(show) {
-  if (!loadMoreButton) return;
-  loadMoreButton.classList.toggle('hidden', !show); // Показ/скрытие кнопки "Load more"
+  loadMoreButton?.classList.toggle('hidden', !show);
 }
 
 export function showLoader() {
-  toggleLoader(true);
+  loader?.classList.remove('hidden'); 
 }
 
 export function hideLoader() {
-  toggleLoader(false);
+  loader?.classList.add('hidden'); 
 }
 
 export function showLoadMoreButton() {
-  toggleLoadMoreButton(true);
+  loadMoreButton?.classList.remove('hidden'); 
 }
 
 export function hideLoadMoreButton() {
-  toggleLoadMoreButton(false);
+  loadMoreButton?.classList.add('hidden'); 
 }
+
+export function showBottomLoaderText() {
+  bottomLoaderText?.classList.remove('hidden');
+}
+
+export function hideBottomLoaderText() {
+  bottomLoaderText?.classList.add('hidden');
+}
+
+
+
+
+
+
+  

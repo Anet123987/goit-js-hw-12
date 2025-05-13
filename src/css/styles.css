@@ -173,7 +173,7 @@ input:-webkit-autofill {
 }
 #load-more {
   display: block;
-  margin: 20px auto; /* Центрирует кнопку по горизонтали и добавляет отступ сверху и снизу */
+  margin: 20px auto; 
   border-radius: 8px;
   padding: 8px 16px;
   width: 125px;
@@ -189,3 +189,26 @@ input:-webkit-autofill {
 #load-more.hidden {
   display: none;
 }
+.bottom-loader {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.bottom-loader span {
+  font-family: var(--font-family);
+font-weight: 400;
+font-size: 16px;
+line-height: 1.5;
+letter-spacing: 0.04em;
+color: #2e2f42;
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
