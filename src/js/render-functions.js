@@ -66,13 +66,7 @@ export function clearGallery() {
   gallery.innerHTML = '';
 }
 
-export function toggleLoader(show) {
-  loader?.classList.toggle('hidden', !show);
-}
 
-export function toggleLoadMoreButton(show) {
-  loadMoreButton?.classList.toggle('hidden', !show);
-}
 
 export function showLoader() {
   loader?.classList.remove('hidden'); 

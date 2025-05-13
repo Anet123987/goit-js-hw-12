@@ -31,7 +31,7 @@ form.addEventListener('submit', async (e) => {
   clearGallery();
   showLoader();
   hideLoadMoreButton();
-
+hideBottomLoaderText ();
   try {
     const data = await getImagesByQuery(currentQuery, currentPage);
     totalPages = Math.ceil(data.totalHits / IMAGES_PER_PAGE);
@@ -48,14 +48,16 @@ form.addEventListener('submit', async (e) => {
       position: 'topRight',
     });
     hideLoader();
+    hideBottomLoaderText ();
   }
 });
 
 loadMoreBtn.addEventListener('click', async () => {
   currentPage += 1;
   showLoader();
-showBottomLoaderText();  
-hideLoadMoreButton(); 
+  showBottomLoaderText();  
+  hideLoadMoreButton(); 
+  
   try {
     const data = await getImagesByQuery(currentQuery, currentPage);
     const hasResults = handleGalleryResponse(data);
@@ -70,8 +72,7 @@ hideLoadMoreButton();
       position: 'topRight',
     });
     hideLoader();
-     
-    hideBottomLoaderText(); 
+    hideBottomLoaderText();  
   }
 });
 
@@ -83,12 +84,15 @@ function handleGalleryResponse(data) {
       position: 'topRight',
     });
     hideLoader();
-    hideBottomLoaderText();
+    hideBottomLoaderText();  
     return false;
   }
 
   createGallery(data.hits); 
   hideLoader();  
+
+  
+  hideBottomLoaderText();
 
   if (currentPage >= totalPages) {
     hideLoadMoreButton(); 
